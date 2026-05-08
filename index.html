@@ -347,8 +347,9 @@ async function runAnalysis() {
 
 // ── CLAUDE API CALL ──────────────────────────────────────────────────────────
 async function callClaude(systemPrompt, userPrompt) {
-const response = await fetch('/.netlify/functions/claude', {
+  const response = await fetch('/.netlify/functions/claude', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -358,6 +359,7 @@ const response = await fetch('/.netlify/functions/claude', {
   });
   const data = await response.json();
   if (data.error) throw new Error(data.error.message);
+  if (!data.content || !data.content[0]) throw new Error('Empty response from API');
   return data.content[0].text;
 }
 
